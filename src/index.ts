@@ -66,7 +66,7 @@ export class OverlayWindow extends EventEmitter {
   static {
     OverlayWindow.events.on('attach', (e: AttachEvent) => {
       OverlayWindow.#isFocused = true
-      OverlayWindow.#electronWindow.setIgnoreMouseEvents(true)
+      OverlayWindow.#electronWindow.setIgnoreMouseEvents(true, { forward: true })
       OverlayWindow.#electronWindow.showInactive()
       if (process.platform === 'linux') {
         OverlayWindow.#electronWindow.setSkipTaskbar(true)
@@ -107,7 +107,7 @@ export class OverlayWindow extends EventEmitter {
       OverlayWindow.#willBeFocused = undefined
       OverlayWindow.#isFocused = true
 
-      OverlayWindow.#electronWindow.setIgnoreMouseEvents(true)
+      OverlayWindow.#electronWindow.setIgnoreMouseEvents(true, { forward: true })
       if (!OverlayWindow.#electronWindow.isVisible()) {
         OverlayWindow.#electronWindow.showInactive()
         if (process.platform === 'linux') {
@@ -159,7 +159,7 @@ export class OverlayWindow extends EventEmitter {
 
   static activateOverlay () {
     OverlayWindow.#willBeFocused = 'overlay'
-    OverlayWindow.#electronWindow.setIgnoreMouseEvents(false)
+    OverlayWindow.#electronWindow.setIgnoreMouseEvents(true, { forward: true })
     OverlayWindow.#electronWindow.focus()
   }
 
