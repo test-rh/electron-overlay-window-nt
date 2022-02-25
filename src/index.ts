@@ -88,7 +88,7 @@ export class OverlayWindow extends EventEmitter {
       OverlayWindow.#electronWindow.hide()
     })
 
-    const dispatchMoveresize = throttle(34 /* 30fps */, OverlayWindow.#updateOverlayBounds)
+    const dispatchMoveresize = throttle(1 /* 30fps */, OverlayWindow.#updateOverlayBounds)
 
     OverlayWindow.events.on('moveresize', (e: MoveresizeEvent) => {
       OverlayWindow.#lastBounds = e
