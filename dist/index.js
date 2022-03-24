@@ -10,7 +10,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _a, _OverlayWindow_electronWindow, _OverlayWindow_lastBounds, _OverlayWindow_isFocused, _OverlayWindow_willBeFocused, _OverlayWindow_updateOverlayBounds, _OverlayWindow_handler;
+var _a, _OverlayWindow_electronWindow, _OverlayWindow_isFocused, _OverlayWindow_willBeFocused, _OverlayWindow_updateOverlayBounds, _OverlayWindow_handler;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OverlayWindow = void 0;
 const events_1 = require("events");
@@ -35,6 +35,7 @@ class OverlayWindow extends events_1.EventEmitter {
     }
     static focusTarget() {
         __classPrivateFieldSet(OverlayWindow, _a, 'target', "f", _OverlayWindow_willBeFocused);
+        __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow).setIgnoreMouseEvents(true, { forward: true });
         lib.focusTarget();
     }
     static attachTo(overlayWindow, targetWindowTitle) {
@@ -58,16 +59,16 @@ class OverlayWindow extends events_1.EventEmitter {
 }
 exports.OverlayWindow = OverlayWindow;
 _a = OverlayWindow, _OverlayWindow_updateOverlayBounds = function _OverlayWindow_updateOverlayBounds() {
-    let lastBounds = __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_lastBounds);
+    let lastBounds = OverlayWindow.bounds;
     if (lastBounds.width != 0 && lastBounds.height != 0) {
         if (process.platform === 'win32') {
-            lastBounds = electron_1.screen.screenToDipRect(__classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow), __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_lastBounds));
+            lastBounds = electron_1.screen.screenToDipRect(__classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow), OverlayWindow.bounds);
         }
         __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow).setBounds(lastBounds);
         if (process.platform === 'win32') {
             // if moved to screen with different DPI, 2nd call to setBounds will correctly resize window
             // dipRect must be recalculated as well
-            lastBounds = electron_1.screen.screenToDipRect(__classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow), __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_lastBounds));
+            lastBounds = electron_1.screen.screenToDipRect(__classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow), OverlayWindow.bounds);
             __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow).setBounds(lastBounds);
         }
     }
@@ -94,7 +95,8 @@ _a = OverlayWindow, _OverlayWindow_updateOverlayBounds = function _OverlayWindow
     }
 };
 _OverlayWindow_electronWindow = { value: void 0 };
-_OverlayWindow_lastBounds = { value: { x: 0, y: 0, width: 0, height: 0 } };
+/** Exposed so that apps can get the current bounds of the target */
+OverlayWindow.bounds = { x: 0, y: 0, width: 0, height: 0 };
 _OverlayWindow_isFocused = { value: false };
 _OverlayWindow_willBeFocused = { value: void 0 };
 OverlayWindow.events = new events_1.EventEmitter();
@@ -119,7 +121,7 @@ OverlayWindow.WINDOW_OPTS = {
         if (e.isFullscreen !== undefined) {
             __classPrivateFieldGet(OverlayWindow, _a, "f", _OverlayWindow_electronWindow).setFullScreen(e.isFullscreen);
         }
-        __classPrivateFieldSet(OverlayWindow, _a, e, "f", _OverlayWindow_lastBounds);
+        OverlayWindow.bounds = e;
         __classPrivateFieldGet(OverlayWindow, _a, "m", _OverlayWindow_updateOverlayBounds).call(OverlayWindow);
     });
     OverlayWindow.events.on('fullscreen', (e) => {
@@ -131,7 +133,7 @@ OverlayWindow.WINDOW_OPTS = {
     });
     const dispatchMoveresize = (0, throttle_debounce_1.throttle)(1 /* 30fps */, __classPrivateFieldGet(OverlayWindow, _a, "m", _OverlayWindow_updateOverlayBounds));
     OverlayWindow.events.on('moveresize', (e) => {
-        __classPrivateFieldSet(OverlayWindow, _a, e, "f", _OverlayWindow_lastBounds);
+        OverlayWindow.bounds = e;
         dispatchMoveresize();
     });
     OverlayWindow.events.on('blur', () => {
