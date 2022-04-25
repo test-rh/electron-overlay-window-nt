@@ -168,7 +168,7 @@ static void check_and_handle_window(HWND hwnd, struct ow_target_window* target_i
   if (!get_title(hwnd, &title) || title == NULL) {
     return;
   }
-  bool is_equal = (strncmp(title, target_info->title, 10) == 0);
+  bool is_equal = (strncmp(title, target_info->title, 9) == 0);
   free(title);
   if (!is_equal) {
     return;
